@@ -9,7 +9,7 @@ public class Grid : MonoBehaviour
     [SerializeField] int cols;
     [SerializeField] int numOfMines;
     [SerializeField] GameObject btnCell;
-    [SerializeField] GameObject wonPanel;
+    [SerializeField] GameObject gameOverPanel;
     static List<List<GameObject>> grid = new List<List<GameObject>>();
     float boardWidth, boardHeight;
     float cellWidth, cellHeight;
@@ -17,26 +17,36 @@ public class Grid : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //wonPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
         boardWidth = gameObject.GetComponent<RectTransform>().rect.width;
         boardHeight = gameObject.GetComponent<RectTransform>().rect.height;
         cellWidth = boardWidth / cols;
         cellHeight = boardHeight / rows;
+        SetUpGrid();
+        AddMines();
+    }
+
+    private void SetUpGrid()
+    {
         for (int i = 0; i < rows; i++)
         {
             List<GameObject> row = new List<GameObject>();
             for (int j = 0; j < cols; j++)
             {
                 //j=x cordinate & i=y cordinate
-                Vector3 cellPos = transform.TransformPoint(new Vector3((j*cellWidth+cellWidth/2)- (float)285.4,-(i*cellHeight+cellHeight/2) + (float)146.0,0));
+                Vector3 cellPos = transform.TransformPoint(new Vector3((j * cellWidth + cellWidth / 2) - (float)285.4, -(i * cellHeight + cellHeight / 2) + (float)146.0, 0));
                 var btn = Instantiate(btnCell, cellPos, Quaternion.identity, this.transform) as GameObject;
                 RectTransform rt = btn.GetComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(cellWidth,cellHeight);
+                rt.sizeDelta = new Vector2(cellWidth, cellHeight);
                 btn.GetComponent<Cell>().SetCoordinates(new Vector2(j, i));
                 row.Add(btn);
             }
             grid.Add(row);
         }
+    }
+
+    private void AddMines()
+    {
         int a = 0;
         while (a < numOfMines)
         {
@@ -55,16 +65,14 @@ public class Grid : MonoBehaviour
         }
     }
 
-    //private void Update()
-    //{
-    //    if ((rows * cols) - numOfMines == Cell.visCount)
-    //    {
-    //        wonPanel.SetActive(true);
-    //        print(wonPanel);
-    //        print("GameOver");
-    //        Cell.visCount = 0;
-    //    }
-    //}
+    private void Update()
+    {
+        if ((rows * cols) - numOfMines == Cell.visCount)
+        {
+            gameOverPanel.SetActive(true);
+            Cell.visCount = 0;
+        }
+    }
     public void ChangeCellColorRed(int x, int y)
     {
         grid[y][x].GetComponent<Button>().GetComponent<Image>().color = Color.red;
@@ -206,5 +214,17 @@ public class Grid : MonoBehaviour
                 queue.Dequeue();
             }
         }
+    }
+
+    public void ResetAllValues()
+    {
+        grid = new List<List<GameObject>>();
+        SetUpGrid();
+        AddMines();
+        gameOverPanel.SetActive(false);
+    }
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
