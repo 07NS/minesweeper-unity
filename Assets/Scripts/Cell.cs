@@ -7,8 +7,10 @@ using UnityEngine.UI;
 public class Cell : MonoBehaviour
 {
     [SerializeField] Grid grid;
-    int x;
-    int y;
+    public int x;
+    public int y;
+    bool isVisited = false;
+    public static int visCount;
     public enum State
     {
         Bomb,
@@ -44,5 +46,13 @@ public class Cell : MonoBehaviour
         this.x = (int)vector.x;
         this.y = (int)vector.y;
     }
-
+    public void MakeVisitedTrue()
+    {
+        isVisited = true;
+        visCount++;
+    }
+    public bool IsVisited()
+    {
+        return isVisited;
+    }
 }
